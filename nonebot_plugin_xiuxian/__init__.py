@@ -43,7 +43,7 @@ src = ''
 load_all_plugins(
         [
             f'{src}nonebot_plugin_xiuxian.xiuxian_boss',
-            f'{src}nonebot_plugin_xiuxian.xiuxian_bank',
+            # f'{src}nonebot_plugin_xiuxian.xiuxian_bank',
             f'{src}nonebot_plugin_xiuxian.xiuxian_sect',
             f'{src}nonebot_plugin_xiuxian.xiuxian_info',
             f'{src}nonebot_plugin_xiuxian.xiuxian_buff',
@@ -66,14 +66,16 @@ async def _(bot: Bot, event: GroupMessageEvent):
     user_name = (
         event.sender.card if event.sender.card else event.sender.nickname
     )  # 获取为用户名
-    root, root_type = XiuxianJsonDate().linggen_get()  # 获取灵根，灵根类型
+    root, root_type = XiuxianJsonDate().linggen_get()  # 获取灵根属性，灵根类型
 
     rate = sql_message.get_root_rate(root_type)  # 灵根倍率
     power = 100 * float(rate)  # 战力=境界的power字段 * 灵根的rate字段
     create_time = str(datetime.now())
+    spirit_rate, spirit_type = XiuxianJsonDate().shenhun_get()  # 获取神魂天资，神识倍率
 
     msg = sql_message.create_user(
-        user_id, root, root_type, int(power), create_time, user_name
+        user_id, root, root_type, int(
+            power), create_time, user_name, spirit_rate, spirit_type
     )
     if XiuConfig().img:
         pic = await get_msg_pic(msg)

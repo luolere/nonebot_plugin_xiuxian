@@ -97,7 +97,9 @@ class XiuxianDateManage:
       "exp" integer DEFAULT 0,
       "user_name" TEXT DEFAULT NULL,
       "level_up_cd" integer DEFAULT NULL,
-      "level_up_rate" integer DEFAULT 0
+      "level_up_rate" integer DEFAULT 0,
+      "spirit_rate" TEXT DEFAULT NULL,
+      "spirit_type" TEXT DEFAULT NULL
     );""")
             elif i == "user_cd":
                 try:
@@ -194,11 +196,11 @@ class XiuxianDateManage:
     def close_dbs(cls):
         XiuxianDateManage().close()
 
-    def _create_user(self, user_id: str, root: str, type: str, power: str, create_time, user_name) -> None:
+    def _create_user(self, user_id: str, root: str, type: str, power: str, create_time, user_name, spirit_rate, spirit_type) -> None:
         """在数据库中创建用户并初始化"""
         c = self.conn.cursor()
-        sql = f"INSERT INTO user_xiuxian (user_id,stone,root,root_type,level,power,create_time,user_name,exp) VALUES (?,0,?,?,'江湖好手',?,?,?,100)"
-        c.execute(sql, (user_id, root, type, power, create_time, user_name))
+        sql = f"INSERT INTO user_xiuxian (user_id,stone,root,root_type,level,power,create_time,user_name,exp, spirit_rate, spirit_type) VALUES (?,0,?,?,'江湖好手',?,?,?,100,?,?)"
+        c.execute(sql, (user_id, root, type, power, create_time, user_name, spirit_rate, spirit_type))
         self.conn.commit()
 
     def get_user_message(self, user_id):
@@ -257,9 +259,10 @@ class XiuxianDateManage:
         cur.execute(sql, (user_id,))
         result = cur.fetchone()
         if not result:
-            self._create_user(user_id, args[0], args[1], args[2], args[3], args[4])
+            self._create_user(
+                user_id, args[0], args[1], args[2], args[3], args[4], args[5], args[6])
             self.conn.commit()
-            return '欢迎进入修仙世界的，你的灵根为：{},类型是：{},你的战力为：{},当前境界：江湖好手'.format(args[0], args[1], args[2], args[3])
+            return '欢迎{}进入修仙世界，你的灵根类型为：{}（灵根属性：{}）,你的神魂天资为{},当前境界：江湖好手'.format(user_id, args[1], args[0], args[6])
         else:
             return '您已迈入修仙世界，输入【我的修仙信息】获取数据吧！'
 
@@ -1106,10 +1109,24 @@ class XiuxianJsonDate:
                     break
                 msg += (j + "、")
 
-            return msg + '属性灵根', lgen
+            return msg, lgen
         else:
             root = random.choice(data[lgen]["type_list"])
             return root, lgen
+
+    def shenhun_get(self):
+        """获取神魂天资信息"""
+        # with open(self.root_jsonpath, 'r', encoding='utf-8') as e:
+        #     file_data = e.read()
+        #     data = json.loads(file_data)
+        data = jsondata.spirit_data()
+        rate_dict = {}
+        for i, v in data.items():
+            rate_dict[i] = v["type_rate"]
+        shenhun = OtherSet().calculated(rate_dict)
+        rate=data[shenhun]["type_speeds"]
+        
+        return rate, shenhun
 
 
     def do_work(self, key, work_list=None, name=None):

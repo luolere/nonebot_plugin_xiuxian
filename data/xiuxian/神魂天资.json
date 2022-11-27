@@ -1,0 +1,22 @@
+{
+  "真仙转世" : {
+    "type_rate" : 1,
+    "type_speeds" : 1.5
+  },
+  "神莹内敛" : {
+    "type_rate" : 8,
+    "type_speeds" : 1.3
+  },
+  "神魂充盈" : {
+    "type_rate" : 30,
+    "type_speeds" : 1.1
+  },
+  "平平无奇" : {
+    "type_rate" : 60,
+    "type_speeds" : 1
+  },
+  "残魂之体" : {
+    "type_rate" : 1,
+    "type_speeds" : 0.8
+  }
+}

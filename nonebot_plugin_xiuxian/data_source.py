@@ -10,6 +10,7 @@ class JsonDate:
     def __init__(self):
         """json文件路径"""
         self.root_jsonpath = DATABASE / "灵根.json"
+        self.spirit_jsonpath = DATABASE / "神魂天资.json"
         self.level_rate_jsonpath = DATABASE / "突破概率.json"
         self.Reward_that_jsonpath = DATABASE / "悬赏令.json"
         self.level_jsonpath = DATABASE / "境界.json"
@@ -40,6 +41,13 @@ class JsonDate:
             data = json.loads(file_data)
             return data
 
+    def spirit_data(self):
+        """获取神魂天资数据"""
+        with open(self.spirit_jsonpath, 'r', encoding='utf-8') as e:
+            file_data = e.read()
+            data = json.loads(file_data)
+            return data
+            
     def level_rate_data(self):
         """获取境界突破概率"""
         with open(self.level_rate_jsonpath, 'r', encoding='utf-8') as e:
