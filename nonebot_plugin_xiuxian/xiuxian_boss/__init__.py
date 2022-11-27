@@ -38,6 +38,7 @@ set_group_boss = on_command("世界boss", aliases={"世界Boss", "世界BOSS"}, 
 battle = on_command("讨伐boss", aliases={"讨伐世界boss", "讨伐Boss", "讨伐BOSS", "讨伐世界Boss","讨伐世界BOSS"}, priority=5, permission= GROUP)
 boss_help = on_command("世界boss帮助", aliases={"世界Boss帮助", "世界BOSS帮助"}, priority=4, block=True)
 boss_delete = on_command("天罚boss", aliases={"天罚世界boss", "天罚Boss", "天罚BOSS", "天罚世界Boss","天罚世界BOSS"}, priority=5, permission= GROUP and (SUPERUSER | GROUP_ADMIN | GROUP_OWNER))
+boss_delete_all = on_command("天罚所有boss", aliases={"天罚所有世界boss", "天罚所有Boss", "天罚所有BOSS", "天罚所有世界Boss","天罚所有世界BOSS"}, priority=5, permission= GROUP and (SUPERUSER | GROUP_ADMIN | GROUP_OWNER))
 boss_integral_info = on_command("世界积分查看", priority=5, permission= GROUP)
 boss_integral_use = on_command("世界积分兑换", priority=5, permission= GROUP)
 
@@ -52,8 +53,9 @@ __boss_help__ = f"""
 4、讨伐boss、讨伐世界boss：讨伐世界Boss，必须加Boss编号
 5、世界boss帮助、世界boss：获取世界Boss帮助信息
 6、天罚boss、天罚世界boss：删除世界Boss，必须加Boss编号,管理员权限
-7、世界积分查看：查看自己的世界积分，和世界积分兑换商品
-8、世界积分兑换+编号：兑换对应的商品
+7、天罚所有boss、天罚所有世界boss：删除所有的世界Boss,管理员权限
+9、世界积分查看：查看自己的世界积分，和世界积分兑换商品
+0、世界积分兑换+编号：兑换对应的商品
 非指令：
 1、拥有定时任务：每{str(boss_time['hours']) + '小时' if boss_time['hours'] != 0 else ''}{str(boss_time['minutes']) + '分钟' if boss_time['minutes'] != 0 else ''}生成一只随机大境界的世界Boss
 """.strip()
@@ -158,6 +160,48 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await boss_delete.finish(MessageSegment.image(pic), at_sender=True)
     else:
         await boss_delete.finish(msg, at_sender=True)
+
+
+
+@boss_delete_all.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    await data_check_conf(bot, event)
+    group_id = event.group_id
+    
+    isInGroup = isInGroups(event)
+    if not isInGroup:#不在配置表内
+        msg = f'本群尚未开启世界Boss，请联系管理员开启!'
+        if XiuConfig().img:
+            pic = await get_msg_pic(msg)
+            await boss_delete_all.finish(MessageSegment.image(pic), at_sender=True)
+        else:
+            await boss_delete_all.finish(msg, at_sender=True)
+    
+    try:
+        bosss = group_boss[group_id]
+    except:
+        msg = f'本群尚未生成世界Boss，请等待世界boss刷新!'
+        if XiuConfig().img:
+            pic = await get_msg_pic(msg)
+            await boss_delete_all.finish(MessageSegment.image(pic), at_sender=True)
+        else:
+            await boss_delete_all.finish(msg, at_sender=True)
+    
+    if bosss == []:
+        msg = f'本群尚未生成世界Boss，请等待世界boss刷新!'
+        if XiuConfig().img:
+            pic = await get_msg_pic(msg)
+            await boss_delete_all.finish(MessageSegment.image(pic), at_sender=True)
+        else:
+            await boss_delete_all.finish(msg, at_sender=True)
+    
+    group_boss[group_id] = []
+    msg = f"所有的世界Boss都烟消云散了~~"
+    if XiuConfig().img:
+        pic = await get_msg_pic(msg)
+        await boss_delete_all.finish(MessageSegment.image(pic), at_sender=True)
+    else:
+        await boss_delete_all.finish(msg, at_sender=True)
 
 @battle.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -265,7 +309,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     more_msg = ''
     battle_flag[group_id] = True
     result, victor, bossinfo_new, get_stone = await Boss_fight(player, bossinfo, bot_id=bot.self_id)
-    if victor == bossinfo['name']:
+    if victor == "Boss赢了":
         group_boss[group_id][boss_num - 1] = bossinfo_new
         XiuxianDateManage().update_ls(user_id, get_stone, 1)
         #新增boss战斗积分点数
@@ -292,7 +336,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         else:
             await battle.finish(msg, at_sender=True)
         
-    elif victor == player['道号']:
+    elif victor == "群友赢了":
         #新增boss战斗积分点数
         boss_all_hp = bossinfo['总血量']#总血量
         boss_integral = int((boss_old_hp / boss_all_hp) * 100)
