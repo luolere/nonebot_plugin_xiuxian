@@ -2,7 +2,7 @@
   "融合灵根" : {
     "type_rate" : 1,
     "type_list" : ["五行融合"],
-    "type_speeds" : 1.2,
+    "type_speeds" : 1.5,
     "type_flag" : []
   },
    "天灵根" : {
@@ -17,11 +17,17 @@
     "type_speeds" : 1.2,
     "type_flag" : []
   },
-  "真灵根" : {
-    "type_rate" : 60,
+  "真灵根-双灵根" : {
+    "type_rate" : 25,
+    "type_list" : ["金","木","水","火","土"],
+    "type_speeds" : 1.1,
+    "type_flag" : [2]
+  },
+  "真灵根-三灵根" : {
+    "type_rate" : 35,
     "type_list" : ["金","木","水","火","土"],
     "type_speeds" : 1,
-    "type_flag" : [2,3]
+    "type_flag" : [3]
   },
   "伪灵根" : {
     "type_rate" : 25,

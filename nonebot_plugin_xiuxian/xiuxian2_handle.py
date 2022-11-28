@@ -17,7 +17,7 @@ xiuxian_data = namedtuple("xiuxian_data", ["no", "user_id", "linggen", "level"])
 UserDate = namedtuple("UserDate",
                       ["id", "user_id", "stone", "root", "root_type", "level", "power", "create_time", "is_sign", "exp",
                        "user_name", "level_up_cd", "level_up_rate", "sect_id", "sect_position", "hp", "mp", "atk", "atkpractice",
-                       "sect_task", "sect_contribution", "sect_elixir_get", "blessed_spot_flag", "blessed_spot_name"])
+                       "sect_task", "sect_contribution", "sect_elixir_get", "blessed_spot_flag", "blessed_spot_name", "spirit_rate", "spirit_type"])
 
 UserCd = namedtuple("UserCd", ["user_id", "type", "create_time", "scheduled_time"])
 
@@ -98,8 +98,6 @@ class XiuxianDateManage:
       "user_name" TEXT DEFAULT NULL,
       "level_up_cd" integer DEFAULT NULL,
       "level_up_rate" integer DEFAULT 0,
-      "spirit_rate" TEXT DEFAULT NULL,
-      "spirit_type" TEXT DEFAULT NULL
     );""")
             elif i == "user_cd":
                 try:
@@ -311,6 +309,11 @@ class XiuxianDateManage:
         """获取境界倍率"""
         data = jsondata.level_data()
         return data[name]['power']
+
+    def get_spirit_power(self, name):
+        """获取基础神识"""
+        data = jsondata.level_data()
+        return data[name]['spirit']
 
     def update_power2(self, user_id) -> None:
         """更新战力"""

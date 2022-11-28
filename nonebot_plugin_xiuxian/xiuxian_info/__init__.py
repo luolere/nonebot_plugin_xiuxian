@@ -105,7 +105,8 @@ async def _(bot: Bot, event: GroupMessageEvent):
     '修为': f'{mess.exp}',
     '灵石': f'{mess.stone}',
     '战力': f'{int(mess.exp * level_rate * realm_rate)}',
-    '灵根': f'{mess.root}({mess.root_type}+{int(level_rate * 100)}%)',
+    '灵根类型': f'{mess.root}(属性：{mess.root_type} 修炼速度提升{int(level_rate * 100)}%)',
+    '神识强度': f'{int(sql_message.get_spirit_power()[mess.level])*int(mess.spirit_rate)}(神魂天资：{mess.spirit_type} 神识强度提升{int(mess.spirit_rate * 100)}%)',
     '突破状态': f'{exp_meg}概率：{jsondata.level_rate_data()[mess.level] + int(mess.level_up_rate)}%',
     '攻击力': f'{mess.atk}，攻修等级{mess.atkpractice}级',
     '所在宗门':sectmsg,
@@ -120,7 +121,8 @@ async def _(bot: Bot, event: GroupMessageEvent):
         await xiuxian_message.finish(MessageSegment.image(img_res), at_sender=True)
     else:
         msg = f"""{user_name}道友的信息
-灵根为：{mess.root}({mess.root_type}+{int(level_rate * 100)}%)
+灵根类型：{mess.root}(属性：{mess.root_type} 修炼速度提升{int(level_rate * 100)}%)
+神识强度：{int(sql_message.get_spirit_power()[mess.level])*int(mess.spirit_rate)}(神魂天资：{mess.spirit_type} 神识强度提升{int(mess.spirit_rate * 100)}%)
 当前境界：{mess.level}(境界+{int(realm_rate * 100)}%)
 当前灵石：{mess.stone}
 当前修为：{mess.exp}(修炼效率+{int((level_rate * realm_rate) * 100)}%)
