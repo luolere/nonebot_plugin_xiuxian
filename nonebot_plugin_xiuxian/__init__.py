@@ -39,11 +39,11 @@ sect_out_check = {}  # 退出宗门或踢出宗门信息记录
 sql_message = XiuxianDateManage()  # sql类
 
 from nonebot import load_all_plugins
-src = ''
+src = 'src.plugins.'
 load_all_plugins(
         [
             f'{src}nonebot_plugin_xiuxian.xiuxian_boss',
-            # f'{src}nonebot_plugin_xiuxian.xiuxian_bank',
+            f'{src}nonebot_plugin_xiuxian.xiuxian_bank',
             f'{src}nonebot_plugin_xiuxian.xiuxian_sect',
             f'{src}nonebot_plugin_xiuxian.xiuxian_info',
             f'{src}nonebot_plugin_xiuxian.xiuxian_buff',
@@ -245,7 +245,8 @@ async def _(bot: Bot, event: GroupMessageEvent):
         return
 
     name, root_type = XiuxianJsonDate().linggen_get()
-    result = sql_message.ramaker(name, root_type, user_id)
+    spirit_rate, spirit_type = XiuxianJsonDate().shenhun_get()
+    result = sql_message.ramaker(name, root_type, spirit_rate, spirit_type, user_id)
     sql_message.update_power2(user_id)  # 更新战力
     if XiuConfig().img:
         pic = await get_msg_pic(result)

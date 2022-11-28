@@ -49,7 +49,8 @@ async def draw_user_info_img(user_id, DETAIL_MAP):
     img.paste(line, (130,520), line)
     
     DETAIL_baseinfo = {}
-    DETAIL_baseinfo["灵根"] = DETAIL_MAP["灵根"]
+    DETAIL_baseinfo["灵根类型"] = DETAIL_MAP["灵根类型"]
+    DETAIL_baseinfo["神识强度"] = DETAIL_MAP["神识强度"]
     DETAIL_baseinfo["突破状态"] = DETAIL_MAP["突破状态"]
     DETAIL_baseinfo['主修功法'] = DETAIL_MAP['主修功法']
     DETAIL_baseinfo['副修神通'] = DETAIL_MAP['副修神通']

@@ -16,8 +16,8 @@ xiuxian_data = namedtuple("xiuxian_data", ["no", "user_id", "linggen", "level"])
 
 UserDate = namedtuple("UserDate",
                       ["id", "user_id", "stone", "root", "root_type", "level", "power", "create_time", "is_sign", "exp",
-                       "user_name", "level_up_cd", "level_up_rate", "sect_id", "sect_position", "hp", "mp", "atk", "atkpractice",
-                       "sect_task", "sect_contribution", "sect_elixir_get", "blessed_spot_flag", "blessed_spot_name", "spirit_rate", "spirit_type"])
+                       "user_name", "level_up_cd", "level_up_rate", "sect_id", "sect_position", "spirit_rate", "spirit_type", "hp", "mp", "atk", "atkpractice",
+                       "sect_task", "sect_contribution", "sect_elixir_get", "blessed_spot_flag", "blessed_spot_name"])
 
 UserCd = namedtuple("UserCd", ["user_id", "type", "create_time", "scheduled_time"])
 
@@ -282,7 +282,7 @@ class XiuxianDateManage:
         elif result[0] == 1:
             return '贪心的人是不会有好运的！'
 
-    def ramaker(self, lg, type, user_id):
+    def ramaker(self, lg, type, sh, sh_type, user_id):
         """洗灵根"""
         cur = self.conn.cursor()
 
@@ -291,12 +291,12 @@ class XiuxianDateManage:
         cur.execute(sql_s, (user_id,))
         result = cur.fetchone()
         if result[0] >= XiuConfig().remake:
-            sql = f"UPDATE user_xiuxian SET root=?,root_type=?,stone=stone-? WHERE user_id=?"
-            cur.execute(sql, (lg, type, XiuConfig().remake, user_id))
+            sql = f"UPDATE user_xiuxian SET root=?,root_type=?,spirit_rate=?,spirit_type=?,stone=stone-? WHERE user_id=?"
+            cur.execute(sql, (lg, type, sh, sh_type, XiuConfig().remake, user_id))
             self.conn.commit()
 
             self.update_power2(user_id)
-            return "逆天之行，重获新生，新的灵根为：{}，类型为：{}".format(lg, type)
+            return "逆天而行，重获新生，新的灵根为{}，属性为{}。新的神魂天资为{}。".format(type, lg, sh_type)
         else:
             return "你的灵石还不够呢，快去赚点灵石吧！"
 
@@ -1405,9 +1405,9 @@ def final_user_data(user_data):
     main_hp_buff = main_buff_data['hpbuff'] if main_buff_data != None else 0
     main_mp_buff = main_buff_data['mpbuff'] if main_buff_data != None else 0
     main_atk_buff = main_buff_data['atkbuff'] if main_buff_data != None else 0
-    user_data[15] = int(user_data[15] * (1 + main_hp_buff))#hp 
-    user_data[16] = int(user_data[16] * (1 + main_mp_buff))#mp
-    user_data[17] = int(user_data[17] * (user_data[18] * 0.04 + 1) * (1 + main_atk_buff) * (1 + weapon_atk_buff)) + user_buff_data.atk_buff#每级+10%攻击
+    user_data[17] = int(user_data[17] * (1 + main_hp_buff))#hp 
+    user_data[18] = int(user_data[18] * (1 + main_mp_buff))#mp
+    user_data[19] = int(user_data[19] * (user_data[20] * 0.04 + 1) * (1 + main_atk_buff) * (1 + weapon_atk_buff)) + user_buff_data.atk_buff#每级+10%攻击
     user_data = tuple(user_data)
     return user_data
     

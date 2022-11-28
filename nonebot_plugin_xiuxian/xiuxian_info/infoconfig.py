@@ -5,7 +5,7 @@ from pathlib import Path
 configkey = ["查询CD", "是否开启图片信息"]
 CONFIG = {
     "查询CD" :60,
-    "是否开启图片信息":True,
+    "是否开启图片信息":False,
 }
 
 def get_config():
