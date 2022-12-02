@@ -17,7 +17,7 @@ xiuxian_data = namedtuple("xiuxian_data", ["no", "user_id", "linggen", "level"])
 UserDate = namedtuple("UserDate",
                       ["id", "user_id", "stone", "root", "root_type", "level", "power", "create_time", "is_sign", "exp",
                        "user_name", "level_up_cd", "level_up_rate", "sect_id", "sect_position", "spirit_rate", "spirit_type", "hp", "mp", "atk", "atkpractice",
-                       "sect_task", "sect_contribution", "sect_elixir_get", "blessed_spot_flag", "blessed_spot_name"])
+                       "sect_task", "sect_contribution", "sect_history_contribution", "sect_elixir_get", "blessed_spot_flag", "blessed_spot_name"])
 
 UserCd = namedtuple("UserCd", ["user_id", "type", "create_time", "scheduled_time"])
 
@@ -98,6 +98,8 @@ class XiuxianDateManage:
       "user_name" TEXT DEFAULT NULL,
       "level_up_cd" integer DEFAULT NULL,
       "level_up_rate" integer DEFAULT 0,
+      "spirit_rate" TEXT DEFAULT NULL,
+      "spirit_type" TEXT DEFAULT NULL
     );""")
             elif i == "user_cd":
                 try:
@@ -673,24 +675,24 @@ class XiuxianDateManage:
             return UserDate(*result)
 
     def donate_update(self, sect_id, stone_num):
-        """宗门捐献更新建设度及可用灵石"""
-        sql = f"UPDATE sects SET sect_used_stone=sect_used_stone+?,sect_scale=sect_scale+? where sect_id=?"
+        """宗门捐献更新建设度"""
+        sql = f"UPDATE sects SET sect_scale=sect_scale+? where sect_id=?"
         cur = self.conn.cursor()
-        cur.execute(sql, (stone_num, stone_num * 10, sect_id))
+        cur.execute(sql, (stone_num, sect_id))
         self.conn.commit()
     
-    def update_sect_materials(self, sect_id, sect_materials, key):
-        """更新资材  1为增加，2为减少"""
-        cur = self.conn.cursor()
+    # def update_sect_materials(self, sect_id, sect_materials, key):
+    #     """更新资材  1为增加，2为减少"""
+    #     cur = self.conn.cursor()
 
-        if key == 1:
-            sql = f"UPDATE sects SET sect_materials=sect_materials+? WHERE sect_id=?"
-            cur.execute(sql, (sect_materials, sect_id))
-            self.conn.commit()
-        elif key == 2:
-            sql = f"UPDATE sects SET sect_materials=sect_materials-? WHERE sect_id=?"
-            cur.execute(sql, (sect_materials, sect_id))
-            self.conn.commit()
+    #     if key == 1:
+    #         sql = f"UPDATE sects SET sect_materials=sect_materials+? WHERE sect_id=?"
+    #         cur.execute(sql, (sect_materials, sect_id))
+    #         self.conn.commit()
+    #     elif key == 2:
+    #         sql = f"UPDATE sects SET sect_materials=sect_materials-? WHERE sect_id=?"
+    #         cur.execute(sql, (sect_materials, sect_id))
+    #         self.conn.commit()
 
     def get_all_sects_id_scale(self):
         """
@@ -765,12 +767,22 @@ class XiuxianDateManage:
         cur.execute(sql, (hp, mp, user_id))
         self.conn.commit()
         
-    def update_user_sect_contribution(self, user_id, sect_contribution):
-        """更新用户宗门贡献度"""
-        sql = f"UPDATE user_xiuxian SET sect_contribution=? where user_id=?"
+    def update_user_sect_contribution(self, user_id, sect_contribution, key):
+        """更新用户宗门贡献度 1=增加 2=消耗 3=清零"""
         cur = self.conn.cursor()
-        cur.execute(sql, (sect_contribution, user_id))
-        self.conn.commit()
+
+        if key == 1:
+            sql = f"UPDATE user_xiuxian SET sect_contribution=sect_contribution+?,sect_history_contribution=sect_history_contribution+? WHERE user_id=?"
+            cur.execute(sql, (sect_contribution,sect_contribution, user_id))
+            self.conn.commit()
+        elif key == 2:
+            sql = f"UPDATE user_xiuxian SET sect_contribution=sect_contribution-? WHERE user_id=?"
+            cur.execute(sql, (sect_contribution,sect_contribution, user_id))
+            self.conn.commit()
+        elif key == 3:
+            sql = f"UPDATE user_xiuxian SET sect_contribution=0,sect_history_contribution=0 WHERE user_id=?"
+            cur.execute(sql, (user_id))
+            self.conn.commit()
 
     def update_user_hp(self,user_id):
         """重置用户状态信息"""
