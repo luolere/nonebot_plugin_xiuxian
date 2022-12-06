@@ -694,19 +694,19 @@ class XiuxianDateManage:
     #         cur.execute(sql, (sect_materials, sect_id))
     #         self.conn.commit()
 
-    def get_all_sects_id_scale(self):
-        """
-        获取所有宗门信息
-        :return
-        :result[0] = sect_id   
-        :result[1] = 建设度 sect_scale,
-        :result[2] = 丹房等级 elixir_room_level 
-        """
-        sql = f"SELECT sect_id, sect_scale, elixir_room_level FROM sects WHERE sect_owner is NOT NULL ORDER BY sect_scale DESC"
-        cur = self.conn.cursor()
-        cur.execute(sql, )
-        result = cur.fetchall()
-        return result
+    # def get_all_sects_id_scale(self):
+    #     """
+    #     获取所有宗门信息
+    #     :return
+    #     :result[0] = sect_id   
+    #     :result[1] = 建设度 sect_scale,
+    #     :result[2] = 丹房等级 elixir_room_level 
+    #     """
+    #     sql = f"SELECT sect_id, sect_scale, elixir_room_level FROM sects WHERE sect_owner is NOT NULL ORDER BY sect_scale DESC"
+    #     cur = self.conn.cursor()
+    #     cur.execute(sql, )
+    #     result = cur.fetchall()
+    #     return result
     
     def get_all_users_by_sect_id(self, sect_id):
         """
