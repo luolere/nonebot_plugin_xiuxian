@@ -5,35 +5,34 @@ from ..xiuxian2_handle import XiuxianDateManage
 from .bossconfig import get_config
 
 config = get_config()
-JINGJIEEXP = {#数值为中期和圆满的平均值
-    "练气境":2500,
-    "筑基境":9000,
-    "结丹境":75000,
-    "元婴境":168000,
-    "化神境":400000,
-    "炼虚境":928000,
-    "合体境":2112000,
-    "大乘境":4736000,
-    "渡劫境":13658000,
-    "真仙境":36418000,
-    "金仙境":75968000,
-    "太乙境":150968000,
-}
+
+def get_boss_jinjie_dict():
+    CONFIGJSONPATH = Path() / "data" / "xiuxian" / "境界.json"
+    with open(CONFIGJSONPATH, "r", encoding="UTF-8") as f:
+        data = f.read()
+    temp_dict = {}
+    data = json.loads(data)
+    for k, v in data.items():
+        temp_dict[k] = v['exp']
+    return temp_dict
+
+JINGJIEEXP = get_boss_jinjie_dict()
+MINJINJIE = 12 #向下取12个小境界(3个大境界)
 jinjie_list = [k for k, v in JINGJIEEXP.items()]
 sql_message = XiuxianDateManage()  # sql类
 
 def createboss():
     top_user_info = sql_message.get_top1_user()
     top_user_level = top_user_info.level
-    if top_user_level == "半步真仙":
-        level = "渡劫境"
+    now_jinjie_index = jinjie_list.index(top_user_level) + 1
+    if now_jinjie_index <= MINJINJIE:
+        boss_jj = random.choice(jinjie_list[:now_jinjie_index])
     else:
-        level = top_user_level[:3]
-    boss_jj = random.choice(jinjie_list[:jinjie_list.index(level) + 1])
+        boss_jj = random.choice(jinjie_list[now_jinjie_index - MINJINJIE:now_jinjie_index])
     bossinfo = get_boss_exp(boss_jj)
     bossinfo['name'] = random.choice(config["Boss名字"])
     bossinfo['jj'] = boss_jj
-    bossinfo['stone'] = config["Boss灵石"][boss_jj]
+    bossinfo['stone'] = config["Boss灵石v1.1"][boss_jj]
     return bossinfo
 
 def get_boss_exp(boss_jj):

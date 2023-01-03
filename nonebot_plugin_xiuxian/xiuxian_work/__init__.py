@@ -107,6 +107,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = RegexGro
                     work_msg_f += "(悬赏令每小时更新一次)"
                     work[user_id].msg = work_msg_f
                     work[user_id].world = work_list
+                    work[user_id].time = datetime.now()
                     msg = work[user_id].msg
                     if XiuConfig().img:
                         pic = await get_msg_pic(msg)
@@ -172,6 +173,15 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = RegexGro
                     await do_work.finish(MessageSegment.image(pic), at_sender=True)
                 else:
                     await do_work.finish(msg, at_sender=True)
+                    
+        elif user_cd_message.type == 3:
+            msg = f"道友现在正在秘境中，分身乏术！"
+            if XiuConfig().img:
+                pic = await get_msg_pic(msg)
+                await do_work.finish(MessageSegment.image(pic), at_sender=True)
+            else:
+                await do_work.finish(msg, at_sender=True)
+
     elif mode == "刷新":#刷新逻辑
         if user_cd_message.type == 2:
             work_time = datetime.strptime(
